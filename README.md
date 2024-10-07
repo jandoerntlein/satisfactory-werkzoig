@@ -11,4 +11,4 @@ Example of a 3-3 Balancer with live realtime updates.
 ![Screenshot of Werkzoig](https://github.com/jandoerntlein/satisfactory-werkzoig/blob/main/scrots/werkzoig_02.png)
 
 Another example. 
-![Screenshot of Werkzoig](https://github.com/jandoerntlein/satisfactory-werkzoig/blob/main/scrots/werkzoig_02.png)
+![Screenshot of Werkzoig](https://github.com/jandoerntlein/satisfactory-werkzoig/blob/main/scrots/werkzoig_03.png)
