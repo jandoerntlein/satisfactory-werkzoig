@@ -1,0 +1,1 @@
+The origin of this data file is: https://github.com/greeny/SatisfactoryTools/blob/master/data/data.json (MIT License)
