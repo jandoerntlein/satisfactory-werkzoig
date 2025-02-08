@@ -83,7 +83,7 @@ function App() {
   return (<>
     <div className="navbar">
       <div className="navbar-left flex gap-1">
-        <a id="load" className="mx-auto w-full h-full text-nowrap h-[32px] flex items-center justify-center" onClick={(ev) => {
+        <a id="load" className="mx-auto w-full text-nowrap h-[32px] flex items-center justify-center" onClick={(ev) => {
           let input = document.createElement('input');
           input.type = 'file';
 
@@ -108,7 +108,7 @@ function App() {
           };
           input.click();
         }}>Load File...</a>
-        <a id="save" className="mx-auto w-full h-full text-nowrap h-[32px] flex items-center justify-center" onClick={(e) => {
+        <a id="save" className="mx-auto w-full text-nowrap h-[32px] flex items-center justify-center" onClick={(e) => {
           console.log("Downloading graph to file...")
           const target = e.target as HTMLAnchorElement;
           target.setAttribute("href", saveFile(graph));
@@ -140,8 +140,8 @@ function App() {
             }
           }} className='bg-red-500'>Calculate</a>
         </div>
-        <a id="clear" className="mx-auto w-full h-full text-nowrap h-[32px] flex items-center justify-center" onClick={() => clearGraph(graph)}>Clear Canvas</a>
-        <a id="help" className="mx-auto w-full h-full text-nowrap h-[32px] flex items-center justify-center" onClick={() => {
+        <a id="clear" className="mx-auto w-full text-nowrap h-[32px] flex items-center justify-center" onClick={() => clearGraph(graph)}>Clear Canvas</a>
+        <a id="help" className="mx-auto w-full text-nowrap h-[32px] flex items-center justify-center" onClick={() => {
           const helpModalBox = document.getElementById('help-modal-box');
           if (helpModalBox) {
             helpModalBox.style.display = "block";
@@ -150,7 +150,7 @@ function App() {
         }>Help</a>
       </div>
       <div className="navbar-right">
-        <a className="mx-auto w-full h-full h-[32px] flex items-center justify-center" href="https://github.com/jandoerntlein/satisfactory-werkzoig">Github (Report a Bug)</a>
+        <a className="mx-auto w-full h-[32px] flex items-center justify-center" href="https://github.com/jandoerntlein/satisfactory-werkzoig">Github (Report a Bug)</a>
       </div>
     </div>
     <div className="help-modal" id="help-modal-box">
