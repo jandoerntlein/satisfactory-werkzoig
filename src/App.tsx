@@ -29,7 +29,7 @@ function clearGraph(graph: any) {
 }
 
 function saveFile(graph: any) {
-  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(graph.serialize()))
+  let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(graph.serialize()))
   return dataStr
 }
 
@@ -81,7 +81,7 @@ function App() {
     <div className="navbar">
       <div className="navbar-left">
         <a id="load" onClick={(ev) => {
-          var input = document.createElement('input');
+          let input = document.createElement('input');
           input.type = 'file';
           
           input.onchange = (e: Event) => { 
@@ -89,14 +89,14 @@ function App() {
   
               const target = e.target as HTMLInputElement;
               if (target && target.files && target.files[0]) {
-                var file = target.files[0]; 
-                var fr = new FileReader();
+                let file = target.files[0]; 
+                let fr = new FileReader();
                 fr.readAsText(file, 'UTF-8');
   
                 fr.onload = function(e) { 
                     if (e.target && typeof e.target.result === 'string') {
                       console.log(e);
-                      var result = JSON.parse(e.target.result);
+                      let result = JSON.parse(e.target.result);
                       graph.configure(result)
                       graph.start(speed_ms)
                     }

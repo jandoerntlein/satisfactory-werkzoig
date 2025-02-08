@@ -143,7 +143,7 @@ export type ContextMenuEventListener = (
     node: LGraphNode
 ) => boolean | void;
 
-export const LiteGraph: {
+declare const LiteGraph: {
     VERSION: number;
 
     CANVAS_GRID_SIZE: number;
@@ -1115,8 +1115,7 @@ export declare class LGraphCanvas {
         item: any,
         options: any,
         e: any,
-        menu: any,
-        node: any
+        menu: any
     ): void;
     /** Create menu for `Add Group` */
     static onGroupAdd: ContextMenuEventListener;

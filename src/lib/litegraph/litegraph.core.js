@@ -6009,7 +6009,8 @@ LGraphNode.prototype.executeAction = function(action)
             // clone node ALT dragging
             if (LiteGraph.alt_drag_do_clone_nodes && e.altKey && node && this.allow_interaction && !skip_action && !this.read_only)
             {
-                if (cloned = node.clone()){
+                let cloned = node.clone()
+                if (cloned){
                     cloned.pos[0] += 5;
                     cloned.pos[1] += 5;
                     this.graph.add(cloned,false,{doCalcSize: false});
@@ -11097,7 +11098,7 @@ LGraphNode.prototype.executeAction = function(action)
 			}else{
 				// is not not connected
 			}
-			nodeNewType = false;
+			let nodeNewType = false;
 			if(typeof slotTypesDefault[fromSlotType] == "object" || typeof slotTypesDefault[fromSlotType] == "array"){
 				for(var typeX in slotTypesDefault[fromSlotType]){
 					if (opts.nodeType == slotTypesDefault[fromSlotType][typeX] || opts.nodeType == "AUTO"){
@@ -11965,7 +11966,7 @@ LGraphNode.prototype.executeAction = function(action)
                 if (options.show_general_after_typefiltered
                     && (sIn.value || sOut.value) 
                 ){
-                    filtered_extra = [];
+                    let filtered_extra = [];
                     for (var i in LiteGraph.registered_node_types) {
 						if( inner_test_filter(i, {inTypeOverride: sIn&&sIn.value?"*":false, outTypeOverride: sOut&&sOut.value?"*":false}) )
 							filtered_extra.push(i);
@@ -11982,7 +11983,7 @@ LGraphNode.prototype.executeAction = function(action)
                 if ((sIn.value || sOut.value) && 
                     ( (helper.childNodes.length == 0 && options.show_general_if_none_on_typefilter) )
                 ){
-                    filtered_extra = [];
+                    let filtered_extra = [];
                     for (var i in LiteGraph.registered_node_types) {
 						if( inner_test_filter(i, {skipFilter: true}) )
 							filtered_extra.push(i);
@@ -12556,7 +12557,7 @@ LGraphNode.prototype.executeAction = function(action)
         }
         graphcanvas.closePanels();
         var ref_window = graphcanvas.getCanvasWindow();
-        panel = graphcanvas.createPanel("Options",{
+        let panel = graphcanvas.createPanel("Options",{
                                             closable: true
                                             ,window: ref_window
                                             ,onOpen: function(){
@@ -14402,7 +14403,7 @@ LGraphNode.prototype.executeAction = function(action)
 
     function clamp(v, a, b) {
         return a > v ? a : b < v ? b : v;
-    };
+    }
     global.clamp = clamp;
 
     if (typeof window != "undefined" && !window["requestAnimationFrame"]) {

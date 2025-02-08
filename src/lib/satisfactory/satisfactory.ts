@@ -32,8 +32,8 @@ class Transfer {
     }
     items: TransferItem[];
     toString() {
-        var sep = ", ";
-        var str = "[";
+        let sep = ", ";
+        let str = "[";
         this.items.forEach((e: TransferItem) => {
             str += e.toString() + sep;
         });
@@ -47,7 +47,7 @@ class Transfer {
     }
     merge() {
         // merge duplicates
-        var itemMap: { [key: string]: number } = {};
+        let itemMap: { [key: string]: number } = {};
         this.items.forEach((e: TransferItem) => {
             if (e.name in itemMap) {
                 if (e.amount > 0) {
@@ -61,13 +61,13 @@ class Transfer {
         });
         // rebuild items
         this.items = [];
-        for (let key in itemMap) {
-            var item = new TransferItem(key, itemMap[key]);
+        for (const key in itemMap) {
+            let item = new TransferItem(key, itemMap[key]);
             this.items.push(new TransferItem(item.name, item.amount));
         }
     }
     sum() {
-        var sum = 0;
+        let sum = 0;
         this.items.forEach((e: TransferItem) => {
             sum += e.amount
         })
@@ -201,7 +201,7 @@ export function itemFromName(name: string): Item {
     return it
 }
 
-function ingredientList(item: Item, alt: boolean = false): Recipe | undefined {
+function ingredientList(item: Item, alt = false): Recipe | undefined {
     if (item === undefined) {
         console.log("-- ingredientList: item is undefined");
         return undefined;
@@ -216,7 +216,7 @@ type GraphNode = {
     recipe?: Recipe;
 };
 
-function printGraph(node: GraphNode, indent: string = ""): string {
+function printGraph(node: GraphNode, indent = ""): string {
     let result = `${indent}${node.item.name} (${node.amount})\n`;
     for (let child of node.children) {
         result += printGraph(child, indent + "  ");
@@ -224,7 +224,7 @@ function printGraph(node: GraphNode, indent: string = ""): string {
     return result;
 }
 
-export function ingredientGraph(item: Item, amount: number = 1): GraphNode {
+export function ingredientGraph(item: Item, amount = 1): GraphNode {
     let graph: GraphNode = { item, amount, children: [] };
     let stack: { node: GraphNode, alt: boolean }[] = [{ node: graph, alt: false }];
     let iterations = 0;
@@ -403,7 +403,7 @@ function drawBadge(node: any, ctx: any, text: string) {
     if (!node.flags.collapsed && node.constructor.title_mode != LiteGraph.NO_TITLE) {
         if (text != undefined && text != "") {
             let fgColor = "white";
-            var bgColor = "#0F1F0F";
+            let bgColor = "#0F1F0F";
             if (text != "100%") {
                 bgColor = "#3F0F0F"
             }
@@ -750,18 +750,18 @@ const createSatisfactoryNodes = (graph: any) => {
 
     Splitter.prototype.onExecute = function () {
         console.log("Splitter: onExecute()")
-        var inputs = null
+        let inputs = null
         if (this.isInputConnected(0) && this.getInputData(0)) {
             inputs = this.getInputData(0).items
         }
-        var outputs = new Transfer([])
+        let outputs = new Transfer([])
 
         this.inputs[0].name = this.getInputData(0)?.toString()
         this.outputs[0].name = this.getOutputData(0)?.toString()
         this.outputs[1].name = this.getOutputData(1)?.toString()
         this.outputs[2].name = this.getOutputData(2)?.toString()
 
-        var N = 0
+        let N = 0
         if (this.isOutputConnected(0)) {
             N++
         }
@@ -814,7 +814,7 @@ const createSatisfactoryNodes = (graph: any) => {
     Merger.prototype.onExecute = function () {
         console.log("Merger: onExecute()")
 
-        var outputs = new Transfer([])
+        let outputs = new Transfer([])
 
         this.inputs[0].name = this.getInputData(0)?.toString()
         this.inputs[1].name = this.getInputData(1)?.toString()
@@ -822,25 +822,25 @@ const createSatisfactoryNodes = (graph: any) => {
         this.outputs[0].name = this.getOutputData(0)?.toString()
 
         if (this.isInputConnected(0)) {
-            var input = this.getInputData(0).items[0]
+            let input = this.getInputData(0).items[0]
             if (input != undefined) {
-                var output = new TransferItem(input.name, Math.round(input.amount))
+                let output = new TransferItem(input.name, Math.round(input.amount))
                 outputs.items.push(output)
             }
         }
 
         if (this.isInputConnected(1)) {
-            var input = this.getInputData(1).items[0]
+            let input = this.getInputData(1).items[0]
             if (input != undefined) {
-                var output = new TransferItem(input.name, Math.round(input.amount))
+                let output = new TransferItem(input.name, Math.round(input.amount))
                 outputs.items.push(output)
             }
         }
 
         if (this.isInputConnected(2)) {
-            var input = this.getInputData(2).items[0]
+            let input = this.getInputData(2).items[0]
             if (input != undefined) {
-                var output = new TransferItem(input.name, Math.round(input.amount))
+                let output = new TransferItem(input.name, Math.round(input.amount))
                 outputs.items.push(output)
             }
         }
