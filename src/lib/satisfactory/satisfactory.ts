@@ -1,6 +1,5 @@
 import { LiteGraph } from '../litegraph/litegraph.core.js';
-
-// Resource: ["Iron", "Copper", "Limestone", "Coal", "Caterium", "Raw Quartz", "Sulfur", "Bauxite", "Uranium", "SAM"]
+import type { Recipe, RecipeResource, Building, Buildings, Miner, Resource, Resources, Item, Items, Recipes, Miners } from './satisfactory-types/satisfactory-types';
 
 class TransferItem {
     constructor(name: string, amount: number) {
@@ -73,96 +72,6 @@ class Transfer {
         })
         return Math.floor(sum)
     }
-}
-
-type RecipeResource = {
-    item: string;
-    amount: number;
-};
-
-type Recipe = {
-    slug: string;
-    name: string;
-    className: string;
-    alternate: boolean;
-    time: number;
-    inHand: boolean;
-    forBuilding: boolean;
-    inWorkshop: boolean;
-    inMachine: boolean;
-    manualTimeMultiplier: number;
-    ingredients: RecipeResource[];
-    products: RecipeResource[];
-    isVariablePower: boolean;
-    minPower: number;
-    maxPower: number;
-    producedIn: string[];
-};
-
-type Recipes = {
-    [key: string]: Recipe;
-};
-
-type Building = {
-    slug: string;
-    name: string;
-    description: string;
-    className: string;
-    categories: string[];
-    buildMenuPriority: number;
-    metadata: {
-        powerConsumption: number;
-        powerConsumptionExponent: number;
-        manufacturingSpeed: number;
-    };
-    size: {
-        width: number;
-        height: number;
-        length: number;
-    }
-};
-
-type Buildings = {
-    [key: string]: Building;
-};
-
-type Miner = {
-    className: string;
-    allowedResources: string[];
-    allowLiquids: boolean;
-    allowSolids: boolean;
-    itemsPerCycle: number;
-    extractCycleTime: number;
-}
-
-type Miners = {
-    [key: string]: Miner;
-}
-
-type Resource = {
-    item: string;
-    pingColor: string;
-    speed: number;
-}
-
-type Resources = {
-    [key: string]: Resource;
-}
-
-type Item = {
-    slug: string;
-    name: string;
-    description: string;
-    sinkPoints: number;
-    className: string;
-    stackSize: number;
-    energyValue: number;
-    radioactiveDecay: number;
-    liquid: boolean;
-}
-
-type Items = {
-    [key: string]: Item;
 }
 
 const g_recipes: Recipes = require("../../data/data1.0.json").recipes;

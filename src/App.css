@@ -18,7 +18,7 @@ body {
   padding: 2px 0px 2px 0px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
 }
 
@@ -28,6 +28,28 @@ body {
 
 .navbar-right {
   margin-right: 4px;
+}
+
+select {
+  font-family: "Roboto Condensed";
+  font-size: 10px;
+  padding: 2px;
+  margin: 0;
+  color: white; 
+  border: 1px solid #333;
+  background-color: #c87f0a;
+  outline: none;
+}
+
+input {
+  font-family: "Roboto Condensed";
+  font-size: 10px;
+  padding: 2px;
+  margin: 0;
+  border: 1px solid #333;
+
+  background-color: #c87f0a;
+  outline: none;
 }
 
 a {
