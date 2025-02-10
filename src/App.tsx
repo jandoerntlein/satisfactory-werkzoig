@@ -124,7 +124,7 @@ function App() {
               })
             }
           </select>
-            <input type="number" id="item-amount" placeholder="Amount" defaultValue={1} />
+            <input type="number" id="item-amount" placeholder="Amount" defaultValue={10} />
           <a onClick={() => {
             const itemSelect = document.getElementById('item-select') as HTMLSelectElement;
             const itemAmount = document.getElementById('item-amount') as HTMLInputElement;
@@ -154,8 +154,8 @@ function App() {
       </div>
     </div>
     <div className="help-modal" id="help-modal-box">
-      <h3>Useful hints</h3>
-      <ul>
+      <h3 className='font-bold'>Useful hints</h3>
+      <ul className="list-disc">
         <li>Use right-click on a blank spot to open the context menu</li>
         <li>Use a left-double-click on a blank spot to open the fuzzy search to add a node</li>
         <li>By holding CTRL, you can select a group of nodes. Drag them around altogether by holding shift. </li>
@@ -173,6 +173,8 @@ function App() {
     <div className="litegraph">
       <canvas ref={graphContainerRef} style={{ width: '100%', height: '100%' }}></canvas>
     </div>
+    <script data-goatcounter="https://satisfactory-werkzoig.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
   </>);
 }
 

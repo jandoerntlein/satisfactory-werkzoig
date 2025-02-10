@@ -160,32 +160,28 @@ export function ingredientGraph(item: Item, amount = 1): GraphNode {
     return graph;
 }
 
-export function createPipeline(graph: any, _graph: GraphNode) {
+/*
+export function createPipeline(graph: any, _graph: GraphNode): void {
     let node: GraphNode = _graph;
-    let stack: { node: GraphNode, parentNode: GraphNode | null, parentRecipe: any | null }[] = [{ node, parentNode: null, parentRecipe: null }];
+    let stack: { node: GraphNode, parentNode: any | null, parentRecipe: any | null }[] = [{ node, parentNode: null, parentRecipe: null }];
     let iterations = 0;
     const maxIterations = 100;
 
-    // Initialize positions
-    let positions: { [key: string]: { x: number, y: number } } = {};
-    let forces: { [key: string]: { x: number, y: number } } = {};
-
     while (stack.length > 0 && iterations < maxIterations) {
-        let { node, parentNode, parentRecipe } = stack.pop()!;
+        let popped = stack.pop();
+        if (!popped) break;
+        let { node, parentNode, parentRecipe } = popped;
         if (node.recipe) {
             let recipe = node.recipe;
             let building = g_buildings[recipe.producedIn[0]];
             if (building) {
                 let node_name = "Building/" + building.name;
-                console.log("-- createPipeline: adding node for building: ", node_name);
+                console.log(`-- createPipeline: adding ${node_name} to produce ${recipe.name}`);
                 let newNode = LiteGraph.createNode(node_name) as any;
                 newNode.properties.recipe = recipe.name;
                 newNode.widgets[1].value = recipe.name;
                 newNode.properties.speed = 100;
                 graph.add(newNode);
-
-                positions[newNode.id] = { x: Math.random() * 1000, y: Math.random() * 1000 };
-                forces[newNode.id] = { x: 0, y: 0 };
 
                 if (parentNode && parentRecipe) {
                     for (let i = 0; i < recipe.products.length; i++) {
@@ -214,7 +210,7 @@ export function createPipeline(graph: any, _graph: GraphNode) {
                 let newNode: any;
                 if (!node.item.liquid) {
                     let node_name = "Miner/Miner";
-                    console.log("-- createPipeline: adding solid node for miner: ", node_name);
+                    console.log("-- createPipeline: adding solid miner: ", node_name);
                     newNode = LiteGraph.createNode(node_name) as any;
                     newNode.properties.recipe = sanitizeName(node.item.className);
                     newNode.widgets[2].value = sanitizeName(node.item.className);
@@ -222,16 +218,13 @@ export function createPipeline(graph: any, _graph: GraphNode) {
                     graph.add(newNode);
                 } else {
                     let node_name = "Miner/FrackingExtractor";
-                    console.log("-- createPipeline: adding liquid node for miner: ", node_name);
+                    console.log("-- createPipeline: adding liquid miner: ", node_name);
                     newNode = LiteGraph.createNode(node_name) as any;
                     newNode.properties.recipe = sanitizeName(node.item.className);
                     newNode.widgets[1].value = sanitizeName(node.item.className);
                     newNode.properties.speed = 100
                     graph.add(newNode);
                 }
-
-                positions[newNode.id] = { x: Math.random() * 1000, y: Math.random() * 1000 };
-                forces[newNode.id] = { x: 0, y: 0 };
 
                 if (parentNode) {
                     let newNodeIdx = 0;
@@ -247,65 +240,64 @@ export function createPipeline(graph: any, _graph: GraphNode) {
         iterations++;
     }
 
-    /** LAYOUTING **/
-    
-    // Apply spring-force directed algorithm
-    const repulsionForce = 1000;
-    const springLength = 400;
-    const springForce = 0.1;
-    const damping = 0.9;
-    const iterationsCount = 1000;
+    graph.arrange()
+}
+    */
+export function createPipeline(graph: any, root: GraphNode): void {
+    const stack: { node: GraphNode, parentNode: any | null, parentRecipe: Recipe | null }[] = [{ node: root, parentNode: null, parentRecipe: null }];
+    const maxIterations = 100;
+    let iterations = 0;
 
-    for (let i = 0; i < iterationsCount; i++) {
-        // Calculate repulsion forces
-        for (let id1 in positions) {
-            for (let id2 in positions) {
-                if (id1 !== id2) {
-                    let dx = positions[id1].x - positions[id2].x;
-                    let dy = positions[id1].y - positions[id2].y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance > 0) {
-                        let force = repulsionForce / (distance * distance);
-                        forces[id1].x += (dx / distance) * force;
-                        forces[id1].y += (dy / distance) * force;
-                    }
+    while (stack.length > 0 && iterations < maxIterations) {
+        const { node, parentNode, parentRecipe } = stack.pop()!;
+        const recipe = node.recipe;
+
+        if (recipe) {
+            const building = g_buildings[recipe.producedIn[0]];
+            if (building) {
+                const newNode = LiteGraph.createNode(`Building/${building.name}`) as any;
+                newNode.properties.recipe = recipe.name;
+                newNode.widgets[1].value = recipe.name;
+                newNode.properties.speed = 100;
+                graph.add(newNode);
+
+                if (parentNode && parentRecipe) {
+                    recipe.products.forEach((p, i) => {
+                        if (parentRecipe) (parentRecipe as Recipe).ingredients.forEach((product: RecipeResource, j: number) => {
+                            if (p.item === product.item) {
+                                newNode.connect(i, parentNode, j);
+                            }
+                        });
+                    });
                 }
+
+                node.children.forEach(child => stack.push({ node: child, parentNode: newNode, parentRecipe: recipe }));
+            }
+        } else if (isBaseIngredient(node.item)) {
+            const miner = Object.values(g_miners).find((m: Miner) => m.allowedResources.includes(node.item.className));
+            if (miner) {
+                const nodeName = node.item.liquid ? "Miner/FrackingExtractor" : "Miner/Miner";
+                const newNode = LiteGraph.createNode(nodeName) as any;
+                newNode.properties.recipe = sanitizeName(node.item.className);
+                newNode.widgets[node.item.liquid ? 1 : 2].value = sanitizeName(node.item.className);
+                newNode.properties.speed = 100;
+                graph.add(newNode);
+
+                if (parentNode && parentRecipe) {
+                    if (parentRecipe) (parentRecipe as Recipe).ingredients.forEach((product: RecipeResource, j: number) => {
+                        if (node.item.className === product.item) {
+                            newNode.connect(0, parentNode, j);
+                        }
+                    });
+                }
+
+                node.children.forEach(child => stack.push({ node: child, parentNode: newNode, parentRecipe: node.recipe ?? null }));
             }
         }
-
-        // Calculate spring forces
-        console.log("-- graph.links: ", graph.links);
-        for (let link of Object.values(graph.links) as { origin_id: string, target_id: string }[]) { // fix: iterate over the values of graph.links
-            let source = positions[link.origin_id];
-            let target = positions[link.target_id];
-            let dx = target.x - source.x;
-            let dy = target.y - source.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            let force = springForce * (distance - springLength);
-            let fx = (dx / distance) * force;
-            let fy = (dy / distance) * force;
-            forces[link.origin_id].x += fx;
-            forces[link.origin_id].y += fy;
-            forces[link.target_id].x -= fx;
-            forces[link.target_id].y -= fy;
-        }
-
-        // Update positions
-        for (let id in positions) {
-            positions[id].x += forces[id].x;
-            positions[id].y += forces[id].y;
-            forces[id].x *= damping;
-            forces[id].y *= damping;
-        }
+        iterations++;
     }
 
-    // Apply positions to nodes
-    for (let node of graph._nodes) {
-        if (positions[node.id]) {
-            node.pos[0] = positions[node.id].x;
-            node.pos[1] = positions[node.id].y;
-        }
-    }
+    graph.arrange();
 }
 
 function drawBadge(node: any, ctx: any, text: string) {
@@ -786,6 +778,7 @@ const createSatisfactoryNodes = (graph: any) => {
             this.properties = {
                 speed: 100,
                 mark: 60,
+                purity: 1,
                 recipe: "undefined"
             }
             this.addWidget("number", "Speed", 100.0, (v: number) => {
@@ -817,6 +810,19 @@ const createSatisfactoryNodes = (graph: any) => {
                     })
                 })
 
+            if(node_name == "Miner/Miner") {
+                this.addWidget("combo", "Purity", "Normal", (v: string) => {
+                    switch (v) {
+                        case "Impure": this.properties.purity = 1; break;
+                        case "Normal": this.properties.purity = 0.5; break;
+                        case "Pure": this.properties.purity = 2.0; break;
+                        default: this.properties.purity = 1;
+                    }
+                },
+                    { values: ["Impure", "Normal", "Pure"] }
+                )
+            }
+
             // check if this miner can extract liquids
             if (miner_data.allowLiquids) {
                 console.log(`-- ${miner_data.className} can extract liquids`)
@@ -833,7 +839,7 @@ const createSatisfactoryNodes = (graph: any) => {
             if (selected_resource === "undefined") {
                 return
             }
-            let output_mk_modifier = this.properties.mark
+            let output_mk_modifier = this.properties.mark * this.properties.purity
             if (miner_data.allowLiquids) {
                 console.log(`-- ${this.title} has output liquids ${selected_resource} for output index 0`)
                 let output_liquid: TransferLiquid = new TransferLiquid(selected_resource, (this.properties.speed / 100.0) * output_mk_modifier)
