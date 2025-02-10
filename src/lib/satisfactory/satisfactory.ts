@@ -80,7 +80,7 @@ const g_miners: Miners = require("../../data/data1.0.json").miners;
 const g_resources: Resources = require("../../data/data1.0.json").resources;
 const g_items: Items = require("../../data/data1.0.json").items;
 
-const baseIngredients = ["Desc_OreIron_C", "Desc_OreCopper_C", "Desc_Stone_C", "Desc_Coal_C", "Desc_GoldIngot_C", "Desc_RawQuartz_C", "Desc_Sulfur_C", "Desc_OreBauxite_C", "Desc_OreUranium_C", "Desc_SAM_C", "Desc_NitrogenGas_C", "Desc_Water_C"]
+const baseIngredients = ["Desc_OreIron_C", "Desc_OreCopper_C", "Desc_Stone_C", "Desc_Coal_C", "Desc_GoldIngot_C", "Desc_RawQuartz_C", "Desc_Sulfur_C", "Desc_OreBauxite_C", "Desc_OreUranium_C", "Desc_SAM_C", "Desc_NitrogenGas_C", "Desc_Water_C", "Desc_LiquidOil_C"]
 
 function isBaseIngredient(item: Item | string) {
     if (typeof item === "string") {
@@ -143,8 +143,10 @@ export function ingredientGraph(item: Item, amount = 1): GraphNode {
         let { node, alt } = stack.pop()!;
         let recipe = ingredientList(node.item, alt);
         if (recipe) {
+            console.log("[ingredientGraph] -- trying to add ingredients for recipe " + recipe.slug);
             node.recipe = recipe;
             for (let ingredient of recipe.ingredients) {
+                console.log("[ingredientGraph]   -- ingredient = " + ingredient.item + " (" + ingredient.amount + ")");
                 let ingredientAmount = (ingredient.amount / recipe.products[0].amount) * node.amount;
                 let ingredientNode: GraphNode = { item: itemFromName(ingredient.item), amount: ingredientAmount, children: [] };
                 node.children.push(ingredientNode);
@@ -156,93 +158,10 @@ export function ingredientGraph(item: Item, amount = 1): GraphNode {
         iterations++;
     }
 
-    console.log("-- graph to produce " + item.name + ":\n" + printGraph(graph));
+    console.log("[ingredientGraph] -- graph to produce " + item.name + ":\n" + printGraph(graph));
     return graph;
 }
 
-/*
-export function createPipeline(graph: any, _graph: GraphNode): void {
-    let node: GraphNode = _graph;
-    let stack: { node: GraphNode, parentNode: any | null, parentRecipe: any | null }[] = [{ node, parentNode: null, parentRecipe: null }];
-    let iterations = 0;
-    const maxIterations = 100;
-
-    while (stack.length > 0 && iterations < maxIterations) {
-        let popped = stack.pop();
-        if (!popped) break;
-        let { node, parentNode, parentRecipe } = popped;
-        if (node.recipe) {
-            let recipe = node.recipe;
-            let building = g_buildings[recipe.producedIn[0]];
-            if (building) {
-                let node_name = "Building/" + building.name;
-                console.log(`-- createPipeline: adding ${node_name} to produce ${recipe.name}`);
-                let newNode = LiteGraph.createNode(node_name) as any;
-                newNode.properties.recipe = recipe.name;
-                newNode.widgets[1].value = recipe.name;
-                newNode.properties.speed = 100;
-                graph.add(newNode);
-
-                if (parentNode && parentRecipe) {
-                    for (let i = 0; i < recipe.products.length; i++) {
-                        let p = recipe.products[i];
-                        console.log("-- ", node_name, ": connection for ", p.item, " - ", parentRecipe);
-                        for (let j = 0; j < parentRecipe?.ingredients.length; j++) {
-                            console.log("-- ", node_name, ": connecting inner...");
-                            let product = parentRecipe.ingredients[j];
-                            if (p.item === product.item) {
-                                console.log("-- ", node_name, ": connecting ", p.item, " with ", product.item);
-                                newNode.connect(i, parentNode, j);
-                            } else {
-                                console.log("-- ", node_name, ": no connection found for ", p.item, " and ", product.item);
-                            }
-                        }
-                    }
-                }
-
-                for (let child of node.children) {
-                    stack.push({ node: child, parentNode: newNode, parentRecipe: recipe });
-                }
-            }
-        } else if (isBaseIngredient(node.item)) {
-            let miner = Object.values(g_miners).find((miner: Miner) => miner.allowedResources.includes(node.item.className));
-            if (miner) {
-                let newNode: any;
-                if (!node.item.liquid) {
-                    let node_name = "Miner/Miner";
-                    console.log("-- createPipeline: adding solid miner: ", node_name);
-                    newNode = LiteGraph.createNode(node_name) as any;
-                    newNode.properties.recipe = sanitizeName(node.item.className);
-                    newNode.widgets[2].value = sanitizeName(node.item.className);
-                    newNode.properties.speed = 100;
-                    graph.add(newNode);
-                } else {
-                    let node_name = "Miner/FrackingExtractor";
-                    console.log("-- createPipeline: adding liquid miner: ", node_name);
-                    newNode = LiteGraph.createNode(node_name) as any;
-                    newNode.properties.recipe = sanitizeName(node.item.className);
-                    newNode.widgets[1].value = sanitizeName(node.item.className);
-                    newNode.properties.speed = 100
-                    graph.add(newNode);
-                }
-
-                if (parentNode) {
-                    let newNodeIdx = 0;
-                    let parentNodeIdx = 0;
-                    newNode.connect(newNodeIdx, parentNode, parentNodeIdx);
-                }
-
-                for (let child of node.children) {
-                    stack.push({ node: child, parentNode: newNode, parentRecipe: node.recipe });
-                }
-            }
-        }
-        iterations++;
-    }
-
-    graph.arrange()
-}
-    */
 export function createPipeline(graph: any, root: GraphNode): void {
     const stack: { node: GraphNode, parentNode: any | null, parentRecipe: Recipe | null }[] = [{ node: root, parentNode: null, parentRecipe: null }];
     const maxIterations = 100;
